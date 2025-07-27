@@ -9,6 +9,7 @@ import os
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
+ACCESS = int(os.getenv("ACCESS", 0))
 
 app = FastAPI()
 scheduler = BackgroundScheduler()
@@ -34,6 +35,19 @@ def schedule_alarm(hour: int, minute: int, password: str):
 def stream(password: str):
     if password != PASSWORD:
         return {"st": "Unauthorized"}
+    camera = VideoStream()
+    return StreamingResponse(
+        camera.generate_frames(),
+        media_type="multipart/x-mixed-replace;boundary=frame",
+    )
+
+
+@app.get("/tempvideo")
+def stream_temp():
+    global ACCESS
+    if ACCESS < 0:
+        return {"st": "Temp limit reached"}
+    ACCESS -= 1
     camera = VideoStream()
     return StreamingResponse(
         camera.generate_frames(),
