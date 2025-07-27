@@ -20,7 +20,13 @@ buzzer = Buzzer(pin=16)
 
 @app.get("/")
 def home():
-    return {"st": "Server running"}
+    return {
+        "Endpoints": {
+            "alarm": "/alarm",
+            "video": "/video",
+            "tempvideo": "/tempvideo",
+        }
+    }
 
 
 @app.post("/alarm")
@@ -48,6 +54,8 @@ def stream_temp():
     if ACCESS < 0:
         return {"st": "Temp limit reached"}
     ACCESS -= 1
+    buzzer = Buzzer(pin=16)
+    buzzer.alert()
     camera = VideoStream()
     return StreamingResponse(
         camera.generate_frames(),
