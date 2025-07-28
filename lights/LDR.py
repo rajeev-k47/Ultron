@@ -23,7 +23,7 @@ class LDR:
             currentTime = time.time()
 
             diff = 0
-            while GPIO.input(self.pin) == GPIO.LOW:
+            while GPIO.input(self.pin) == GPIO.LOW and diff < 1:
                 diff = time.time() - currentTime
 
             if (diff * 1000) > 100:

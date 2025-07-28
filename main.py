@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from audio import Buzzer
-from lights import HeadLight, LDR
+from lights import HeadLight, LDR, Decor
 from video import VideoStream
 import threading
 from dotenv import load_dotenv
@@ -19,6 +19,7 @@ scheduler.start()
 buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6)
 ldr = LDR(pin=4)
+decor = Decor(pin=12)
 
 
 @app.on_event("startup")
@@ -34,6 +35,7 @@ def home():
             "alarm": "/alarm",
             "video": "/video",
             "tempvideo": "/tempvideo",
+            "decor": "/decor",
             #            "headlight": "/headlight",
         }
     }
@@ -79,9 +81,16 @@ def stream_temp():
 #    return {"st": "Headlight toggled"}
 
 
+@app.get("/decor")
+def toggleDecor(mode: int):
+    decor.setmode(mode)
+    return {"st": "Decor set to mode " + str(mode)}
+
+
 @app.on_event("shutdown")
 def shutdown_event():
     scheduler.shutdown()
     ldr.cleanup()
     buzzer.cleanup()
     headlight.cleanup()
+    decor.cleanup()
