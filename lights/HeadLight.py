@@ -7,6 +7,7 @@ class HeadLight:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
         self.pin = pin
+        self.status = 0  # If same harware is used by multiple processes, currently (0: Apis, 1: LDR)
 
     def cleanup(self):
         GPIO.cleanup(self.pin)

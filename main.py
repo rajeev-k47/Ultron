@@ -18,7 +18,7 @@ scheduler.start()
 
 buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6)
-ldr = LDR(pin=4)
+ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12)
 
 
@@ -36,7 +36,7 @@ def home():
             "video": "/video",
             "tempvideo": "/tempvideo",
             "decor": "/decor",
-            #            "headlight": "/headlight",
+            "headlight": "/headlight",
         }
     }
 
@@ -75,10 +75,14 @@ def stream_temp():
     )
 
 
-# @app.get("/headlight")
-# def toggleHeadlight():
-#    headlight.toggle()
-#    return {"st": "Headlight toggled"}
+@app.get("/headlight")
+def toggleHeadlight(mode: int = 0):
+    if mode != 0:
+        headlight.status = mode
+        return {"st": "Headlight set to mode " + str(mode)}
+    headlight.status = 0
+    headlight.toggle()
+    return {"st": "Headlight toggled"}
 
 
 @app.get("/decor")
