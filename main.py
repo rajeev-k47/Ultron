@@ -3,15 +3,17 @@ from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from audio import Buzzer
 from lights import HeadLight, LDR, Decor
-from video import VideoStream
+from video import VideoStream, People
 import threading
 from dotenv import load_dotenv
 import os
+import cv2
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
 ACCESS = int(os.getenv("ACCESS", 0))
 
+camera = cv2.VideoCapture(0)
 app = FastAPI()
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -20,11 +22,14 @@ buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6)
 ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12)
+people_detector = People(cap=camera)
 
 
 @app.on_event("startup")
 def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
+    thread1 = threading.Thread(target=people_detector.run, daemon=True)
+    thread1.start()
     thread.start()
 
 
@@ -53,9 +58,9 @@ def schedule_alarm(hour: int, minute: int, password: str):
 def stream(password: str):
     if password != PASSWORD:
         return {"st": "Unauthorized"}
-    camera = VideoStream()
+    cam1 = VideoStream()
     return StreamingResponse(
-        camera.generate_frames(),
+        cam1.generate_frames(camera),
         media_type="multipart/x-mixed-replace;boundary=frame",
     )
 
@@ -68,9 +73,9 @@ def stream_temp():
     ACCESS -= 1
     buzzer = Buzzer(pin=16)
     buzzer.alert()
-    camera = VideoStream()
+    cam2 = VideoStream()
     return StreamingResponse(
-        camera.generate_frames(),
+        cam2.generate_frames(camera),
         media_type="multipart/x-mixed-replace;boundary=frame",
     )
 

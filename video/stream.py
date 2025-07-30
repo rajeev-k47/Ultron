@@ -1,14 +1,12 @@
 import cv2
 
-camera = cv2.VideoCapture(0)
-
 
 class VideoStream:
     def __init__(self):
         self.frame = None
         self.buffer = None
 
-    def generate_frames(self):
+    def generate_frames(self, camera):
         while True:
             success, frame = camera.read()
             if not success:
