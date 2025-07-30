@@ -29,8 +29,9 @@ class WakeListener:
                 keyword_index = self.porcupine.process(pcm)
                 if keyword_index >= 0:
                     print("Woke up!")
-                    cmd = self.vc.stt(timeout=5)
+                    cmd = self.vc.stt(timeout=2)
                     if cmd:
+                        print(cmd)
                         self.vc.handle_command(cmd)
         finally:
             self.cleanup()

@@ -7,7 +7,11 @@ User={{USER}}
 WorkingDirectory={{PROJECT_DIR}}
 ExecStart={{PROJECT_DIR}}/ultron/bin/uvicorn main:app --host 0.0.0.0 --port 8000
 Restart=always
-Environment=PATH={{PROJECT_DIR}}/venv/bin
+Environment=PATH={{PROJECT_DIR}}/ultron/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
 
+Group=audio
+
+PermissionsStartOnly=true
 [Install]
 WantedBy=multi-user.target

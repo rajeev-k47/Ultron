@@ -9,7 +9,7 @@ class VoiceCommands:
         self.buzzer.mode = 1
         self.headlight = headlight
 
-    def stt(self, timeout=5):
+    def stt(self, timeout=2):
         try:
             mic = sr.Microphone()
             with mic as source:
