@@ -7,6 +7,7 @@ class Buzzer:
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(pin, GPIO.OUT)
         self.pin = pin
+        self.mode = 0  # 0 for alert, 1 for voiceCommands
 
     def cleanup(self):
         GPIO.cleanup(self.pin)

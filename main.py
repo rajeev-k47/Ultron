@@ -8,10 +8,12 @@ import threading
 from dotenv import load_dotenv
 import os
 import cv2
+from voice import WakeListener
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
 ACCESS = int(os.getenv("ACCESS", 0))
+ACCESS_KEY = os.getenv("ACCESS_KEY")
 
 camera = cv2.VideoCapture(0)
 app = FastAPI()
@@ -22,14 +24,23 @@ buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6)
 ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12)
-people_detector = People(cap=camera)
+# people_detector = People(cap=camera)
+listener = WakeListener(
+    access_key=ACCESS_KEY,
+    buzzer=buzzer,
+    headlight=headlight,
+    keywords=["terminator"],
+    mic_index=None,
+)
 
 
 @app.on_event("startup")
 def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
-    thread1 = threading.Thread(target=people_detector.run, daemon=True)
-    thread1.start()
+    # thread1 = threading.Thread(target=people_detector.run, daemon=True)
+    thread2 = threading.Thread(target=listener.listen, daemon=True)
+    thread2.start()
+    # thread1.start()
     thread.start()
 
 
@@ -71,7 +82,6 @@ def stream_temp():
     if ACCESS < 0:
         return {"st": "Temp limit reached"}
     ACCESS -= 1
-    buzzer = Buzzer(pin=16)
     buzzer.alert()
     cam2 = VideoStream()
     return StreamingResponse(
