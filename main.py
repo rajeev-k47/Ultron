@@ -1,7 +1,7 @@
 from fastapi import FastAPI
+from audio import Buzzer, Speaker
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
-from audio import Buzzer
 from lights import HeadLight, LDR, Decor
 from video import VideoStream, People
 import threading
