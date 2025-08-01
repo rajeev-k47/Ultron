@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from audio import Buzzer, Speaker
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
-from lights import HeadLight, LDR, Decor
+from lights import HeadLight, LDR, Decor, TubeLight
 from video import VideoStream, People
 import threading
 from dotenv import load_dotenv
@@ -24,11 +24,13 @@ buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6)
 ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12)
+tubelight = TubeLight(pin=17)
 # people_detector = People(cap=camera)
 listener = WakeListener(
     access_key=ACCESS_KEY,
     buzzer=buzzer,
     headlight=headlight,
+    tubelight=tubelight,
     keywords=["terminator"],
     mic_index=None,
 )
@@ -100,6 +102,15 @@ def toggleHeadlight(mode: int = 0):
     return {"st": "Headlight toggled"}
 
 
+@app.get("/tubelight")
+def toggleTubeLight(fun: int = 0):
+    if fun != 0:
+        tubelight.fun()
+        return {"st": "Let's have some fun"}
+    tubelight.toggle()
+    return {"st": "TubeLight toggled"}
+
+
 @app.get("/decor")
 def toggleDecor(mode: int):
     decor.setmode(mode)
@@ -113,3 +124,4 @@ def shutdown_event():
     buzzer.cleanup()
     headlight.cleanup()
     decor.cleanup()
+    tubelight.cleanup()
