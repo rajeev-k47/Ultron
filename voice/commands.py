@@ -72,5 +72,5 @@ class VoiceCommands:
                 self.headlight.status = 1
                 self.speaker.speak("Headlight mode toggled")
         elif "light" in cmd:
-            self.tubelight.toogle()
+            self.tubelight.toggle()
             self.speaker.speak("Tubelight toggled")
