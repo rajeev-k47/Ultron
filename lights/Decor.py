@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import time
 import random
 import threading
+import sounddevice as sd
+import numpy as np
 
 
 class Decor:
@@ -10,8 +12,15 @@ class Decor:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
         self.pin = pin
+        self._setup_mic()
         self._running = False
         self._thread = None
+        self.pwm = GPIO.PWM(self.pin, 100)
+        self.stream = None
+
+    def _setup_mic(self):
+        self.sample_rate = 44100
+        self.block_size = 1024
 
     def cleanup(self):
         self.stop()
@@ -27,6 +36,11 @@ class Decor:
         self._running = False
         if self._thread and self._thread.is_alive():
             self._thread.join()
+        if self.stream:
+            self.stream.stop()
+            self.stream.close()
+            self.stream = None
+        self.pwm.stop()
 
     def _run_pattern(self, func, *args):
         self.stop()
@@ -43,6 +57,8 @@ class Decor:
             self._run_pattern(self._fade_effect)
         elif mode == 3:
             self._run_pattern(self._random_blink)
+        elif mode == 4:
+            self._run_pattern(self._music_reactive)
         else:
             self.stop()
 
@@ -61,22 +77,21 @@ class Decor:
             time.sleep(0.1)
 
     def _fade_effect(self):
-        pwm = GPIO.PWM(self.pin, 100)
-        pwm.start(0)
+        self.pwm.start(0)
         try:
             while self._running:
                 for duty_cycle in range(0, 101, 5):
                     if not self._running:
                         break
-                    pwm.ChangeDutyCycle(duty_cycle)
+                    self.pwm.ChangeDutyCycle(duty_cycle)
                     time.sleep(0.05)
                 for duty_cycle in range(100, -1, -5):
                     if not self._running:
                         break
-                    pwm.ChangeDutyCycle(duty_cycle)
+                    self.pwm.ChangeDutyCycle(duty_cycle)
                     time.sleep(0.05)
         finally:
-            pwm.stop()
+            self.pwm.stop()
 
     def _random_blink(self):
         while self._running:
@@ -85,3 +100,34 @@ class Decor:
             self.off()
             time.sleep(random.uniform(0.05, 0.5))
 
+    def _music_reactive(self):
+        self.pwm.start(0)
+
+        def audio_callback(indata, frames, t, st):
+            if not self._running:
+                return
+            volume_norm = np.linalg.norm(indata)
+            noise_floor = 0.8
+            if volume_norm < noise_floor:
+                duty_cycle = 0
+            else:
+                scaled = (volume_norm - noise_floor) * 5
+                duty_cycle = min(100, max(0, int(scaled)))
+
+            self.pwm.ChangeDutyCycle(duty_cycle)
+
+        try:
+            self.stream = sd.InputStream(
+                callback=audio_callback,
+                channels=1,
+                samplerate=self.sample_rate,
+                blocksize=self.block_size,
+            )
+            self.stream.start()
+            while self._running:
+                time.sleep(0.1)
+        finally:
+            self.stream.stop()
+            self.stream.close()
+            self.stream = None
+            self.pwm.stop()
