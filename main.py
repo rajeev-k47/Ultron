@@ -3,6 +3,7 @@ from audio import Buzzer, Speaker
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from lights import HeadLight, LDR, Decor, TubeLight
+from state.state import State
 from video import VideoStream, People
 import threading
 from dotenv import load_dotenv
@@ -20,19 +21,20 @@ app = FastAPI()
 scheduler = BackgroundScheduler()
 scheduler.start()
 
+state = State()
 buzzer = Buzzer(pin=16)
-headlight = HeadLight(pin=6)
+headlight = HeadLight(pin=6, state=state)
 ldr = LDR(pin=4, headlight=headlight)
-decor = Decor(pin=12)
-tubelight = TubeLight(pin=17)
+decor = Decor(pin=12, state=state)
+tubelight = TubeLight(pin=17, state=state)
 # people_detector = People(cap=camera)
 listener = WakeListener(
     access_key=ACCESS_KEY,
     buzzer=buzzer,
     headlight=headlight,
     tubelight=tubelight,
+    state=state,
     keywords=["terminator"],
-    mic_index=None,
 )
 
 
@@ -94,6 +96,7 @@ def stream_temp():
 
 @app.get("/headlight")
 def toggleHeadlight(mode: int = 0):
+    state.save_state({"headlight": mode})
     if mode != 0:
         headlight.status = mode
         return {"st": "Headlight set to mode " + str(mode)}

@@ -6,11 +6,18 @@ from voice import VoiceCommands
 
 class WakeListener:
     def __init__(
-        self, access_key, buzzer, headlight, tubelight, keywords=None, mic_index=None
+        self,
+        access_key,
+        buzzer,
+        headlight,
+        tubelight,
+        state,
+        keywords=None,
     ):
         self.porcupine = pvporcupine.create(access_key=access_key, keywords=keywords)
         self.sample_rate = self.porcupine.sample_rate
         self.frame_length = self.porcupine.frame_length
+        self.state = state
 
         self.pa = pyaudio.PyAudio()
         self.stream = self.pa.open(
@@ -21,7 +28,7 @@ class WakeListener:
             frames_per_buffer=self.frame_length,
         )
 
-        self.vc = VoiceCommands(buzzer, headlight, tubelight)
+        self.vc = VoiceCommands(buzzer, headlight, tubelight, self.state)
 
     def listen(self):
         try:

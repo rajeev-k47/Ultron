@@ -7,7 +7,7 @@ import numpy as np
 
 
 class Decor:
-    def __init__(self, pin):
+    def __init__(self, pin, state):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, GPIO.LOW)
@@ -17,6 +17,8 @@ class Decor:
         self._thread = None
         self.pwm = GPIO.PWM(self.pin, 100)
         self.stream = None
+        self.state = state
+        self.setmode(self.state.load_state().get("decor", 0))
 
     def _setup_mic(self):
         self.sample_rate = 44100
@@ -49,6 +51,7 @@ class Decor:
         self._thread.start()
 
     def setmode(self, mode, interval=0.5):
+        self.state.save_state({"decor": mode})
         if mode == 0:
             self._run_pattern(self._blink, interval)
         elif mode == 1:

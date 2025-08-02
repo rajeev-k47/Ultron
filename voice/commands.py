@@ -1,17 +1,17 @@
 import speech_recognition as sr
 import time
 from audio import Speaker
-from lights import TubeLight
 
 
 class VoiceCommands:
-    def __init__(self, buzzer, headlight, tubelight):
+    def __init__(self, buzzer, headlight, tubelight, state):
         self.recognizer = sr.Recognizer()
         self.buzzer = buzzer
         self.buzzer.mode = 1
         self.headlight = headlight
         self.speaker = Speaker()
         self.tubelight = tubelight
+        self.state = state
 
     def stt(self, timeout=2):
         try:
@@ -61,15 +61,18 @@ class VoiceCommands:
             if "headlight" in cmd:
                 self.headlight.status = 2
                 self.headlight.on()
+                self.state.save_state({"headlight": 2})
                 self.speaker.speak("Headlight turned on")
         elif "turn off" in cmd:
             if "headlight" in cmd:
                 self.headlight.status = 2
                 self.headlight.off()
+                self.state.save_state({"headlight": 2})
                 self.speaker.speak("Headlight turned off")
         elif "toggle" in cmd:
             if "headlight mode" in cmd:
                 self.headlight.status = 1
+                self.state.save_state({"headlight": 1})
                 self.speaker.speak("Headlight mode toggled")
         elif "light" in cmd:
             self.tubelight.toggle()
