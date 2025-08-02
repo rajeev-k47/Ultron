@@ -22,6 +22,7 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 
 state = State()
+state.init_file()
 buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6, state=state)
 ldr = LDR(pin=4, headlight=headlight)

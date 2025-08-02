@@ -5,7 +5,7 @@ from pathlib import Path
 class State:
     def __init__(self):
         self.file = Path("ultron_static.json")
-        self.default_state = {"headlight": 1, "tubelight": 1, "decor": 0}
+        self.default_state = {"headlight": 1, "tubelight": 0, "decor": 2}
 
     def init_file(self):
         if not self.file.exists():
