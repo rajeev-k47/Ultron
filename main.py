@@ -96,7 +96,7 @@ def stream_temp():
 
 @app.get("/headlight")
 def toggleHeadlight(mode: int = 0):
-    state.save_state({"headlight": mode})
+    state.update_state("headlight", mode)
     if mode != 0:
         headlight.status = mode
         return {"st": "Headlight set to mode " + str(mode)}

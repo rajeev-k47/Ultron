@@ -23,7 +23,7 @@ class TubeLight:
 
     def toggle(self):
         state = GPIO.input(self.pin)
-        self.state.save_state({"tubelight": state})
+        self.state.update_state("tubelight", state)
         if state:
             GPIO.output(self.pin, GPIO.LOW)
         else:

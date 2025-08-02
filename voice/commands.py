@@ -61,18 +61,18 @@ class VoiceCommands:
             if "headlight" in cmd:
                 self.headlight.status = 2
                 self.headlight.on()
-                self.state.save_state({"headlight": 2})
+                self.state.update_state("headlight", 2)
                 self.speaker.speak("Headlight turned on")
         elif "turn off" in cmd:
             if "headlight" in cmd:
                 self.headlight.status = 2
                 self.headlight.off()
-                self.state.save_state({"headlight": 2})
+                self.state.update_state("headlight", 2)
                 self.speaker.speak("Headlight turned off")
         elif "toggle" in cmd:
             if "headlight mode" in cmd:
                 self.headlight.status = 1
-                self.state.save_state({"headlight": 1})
+                self.state.update_state("headlight", 1)
                 self.speaker.speak("Headlight mode toggled")
         elif "light" in cmd:
             self.tubelight.toggle()

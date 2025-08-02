@@ -51,7 +51,7 @@ class Decor:
         self._thread.start()
 
     def setmode(self, mode, interval=0.5):
-        self.state.save_state({"decor": mode})
+        self.state.update_state("decor", mode)
         if mode == 0:
             self._run_pattern(self._blink, interval)
         elif mode == 1:
