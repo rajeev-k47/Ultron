@@ -1,1 +1,1 @@
-from .groq_handler import Groq
+from .groq_handler import Groqy

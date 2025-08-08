@@ -2,7 +2,7 @@ from groq import Groq
 import subprocess
 
 
-class Groq:
+class Groqy:
     def __init__(self, api_key):
         self.api_key = api_key
         self.client = Groq(api_key=self.api_key)
@@ -24,5 +24,5 @@ class Groq:
         )
         return chat_completion.choices[0].message.content
 
-    def speak(self, text):
-        subprocess.call(["espeak", text])
+    def speak(self, prompt):
+        subprocess.call(["espeak", self.answer(prompt=prompt)])
