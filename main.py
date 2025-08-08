@@ -10,17 +10,20 @@ from dotenv import load_dotenv
 import os
 import cv2
 from voice import WakeListener
+from gen_ai import Groq
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
 ACCESS = int(os.getenv("ACCESS", 0))
 ACCESS_KEY = os.getenv("ACCESS_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 camera = cv2.VideoCapture(0)
 app = FastAPI()
 scheduler = BackgroundScheduler()
 scheduler.start()
-
+groq = Groq(api_key=GROQ_API_KEY)
+groq.speak("For the test only")
 state = State()
 state.init_file()
 buzzer = Buzzer(pin=16)
