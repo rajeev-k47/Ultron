@@ -1,10 +1,11 @@
+from gen_ai.groq_handler import Groqy
 import speech_recognition as sr
 import time
 from audio import Speaker
 
 
 class VoiceCommands:
-    def __init__(self, buzzer, headlight, tubelight, state):
+    def __init__(self, buzzer, headlight, tubelight, state, groqy):
         self.recognizer = sr.Recognizer()
         self.buzzer = buzzer
         self.buzzer.mode = 1
@@ -12,6 +13,7 @@ class VoiceCommands:
         self.speaker = Speaker()
         self.tubelight = tubelight
         self.state = state
+        self.groqy = groqy
 
     def stt(self, timeout=2):
         try:
@@ -74,6 +76,8 @@ class VoiceCommands:
                 self.headlight.status = 1
                 self.state.update_state("headlight", 1)
                 self.speaker.speak("Headlight mode toggled")
-        elif "light" in cmd:
+        elif "tubelight" in cmd:
             self.tubelight.toggle()
             self.speaker.speak("Tubelight toggled")
+        else:
+            self.groqy.speak(cmd)

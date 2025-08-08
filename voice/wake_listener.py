@@ -12,6 +12,7 @@ class WakeListener:
         headlight,
         tubelight,
         state,
+        groqy,
         keywords=None,
     ):
         self.porcupine = pvporcupine.create(access_key=access_key, keywords=keywords)
@@ -28,7 +29,7 @@ class WakeListener:
             frames_per_buffer=self.frame_length,
         )
 
-        self.vc = VoiceCommands(buzzer, headlight, tubelight, self.state)
+        self.vc = VoiceCommands(buzzer, headlight, tubelight, self.state, groqy)
 
     def listen(self):
         try:

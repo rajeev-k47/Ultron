@@ -37,6 +37,7 @@ listener = WakeListener(
     headlight=headlight,
     tubelight=tubelight,
     state=state,
+    groqy=groq,
     keywords=["terminator"],
 )
 
