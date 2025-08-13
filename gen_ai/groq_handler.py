@@ -26,4 +26,4 @@ class Groqy:
         return chat_completion.choices[0].message.content
 
     def speak(self, prompt):
-        self.speaker.speak(prompt)
+        self.speaker.speak(self.answer(prompt))
