@@ -3,9 +3,10 @@ import subprocess
 
 
 class Groqy:
-    def __init__(self, api_key):
+    def __init__(self, api_key, speaker):
         self.api_key = api_key
         self.client = Groq(api_key=self.api_key)
+        self.speaker = speaker
 
     def answer(self, prompt):
         chat_completion = self.client.chat.completions.create(
@@ -25,4 +26,4 @@ class Groqy:
         return chat_completion.choices[0].message.content
 
     def speak(self, prompt):
-        subprocess.call(["espeak", self.answer(prompt=prompt)])
+        self.speaker.speak(prompt)
