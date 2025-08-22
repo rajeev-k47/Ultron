@@ -4,6 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okio.IOException
 
 val client = OkHttpClient()
 
@@ -13,11 +14,19 @@ fun makeRequest(url: String) {
             .url(url)
             .build()
 
-        client.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            Log.d("match", response.body.toString())
+        try {
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    return@launch
+                }
+            }
+        } catch (e: IOException) {
             withContext(Dispatchers.Main) {
-                println(body)
+                println("Network Error: ${e.message}")
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                println("An unexpected error occurred: ${e.message}")
             }
         }
     }
