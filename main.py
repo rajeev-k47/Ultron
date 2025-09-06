@@ -23,7 +23,7 @@ app = FastAPI()
 scheduler = BackgroundScheduler()
 scheduler.start()
 
-speaker = Speaker()
+speaker = Speaker(GROQ_API_KEY)
 groq = Groqy(api_key=GROQ_API_KEY, speaker=speaker)
 state = State()
 state.init_file()
@@ -40,6 +40,7 @@ listener = WakeListener(
     tubelight=tubelight,
     state=state,
     groqy=groq,
+    speaker=speaker,
     keywords=["terminator"],
 )
 

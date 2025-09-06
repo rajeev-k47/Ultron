@@ -5,12 +5,12 @@ from audio import Speaker
 
 
 class VoiceCommands:
-    def __init__(self, buzzer, headlight, tubelight, state, groqy):
+    def __init__(self, buzzer, headlight, tubelight, state, groqy, speaker):
         self.recognizer = sr.Recognizer()
         self.buzzer = buzzer
         self.buzzer.mode = 1
         self.headlight = headlight
-        self.speaker = Speaker()
+        self.speaker = speaker
         self.tubelight = tubelight
         self.state = state
         self.groqy = groqy
