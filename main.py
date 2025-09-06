@@ -46,6 +46,7 @@ listener = WakeListener(
     state=state,
     groqy=groq,
     speaker=speaker,
+    streamplayer=streamplayer,
     keywords=["terminator"],
 )
 
