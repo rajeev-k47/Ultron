@@ -15,7 +15,10 @@ class Speaker:
         # self.engine.say(text)
         # self.engine.runAndWait()
         response = self.client.audio.speech.create(
-            model="playai-tts", voice="Indigo-PlayAI", input=text, response_format="wav"
+            model="playai-tts",
+            voice="Cheyenne-PlayAI",
+            input=text,
+            response_format="wav",
         )
 
         response.write_to_file(self.speech_file_path)

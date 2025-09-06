@@ -14,6 +14,7 @@ class WakeListener:
         state,
         groqy,
         speaker,
+        streamplayer,
         keywords=None,
     ):
         self.porcupine = pvporcupine.create(access_key=access_key, keywords=keywords)
@@ -22,6 +23,7 @@ class WakeListener:
         self.state = state
         self.speaker = speaker
         self.pa = pyaudio.PyAudio()
+        self.streamplayer = streamplayer
         self.stream = self.pa.open(
             rate=self.sample_rate,
             channels=1,
@@ -31,7 +33,7 @@ class WakeListener:
         )
 
         self.vc = VoiceCommands(
-            buzzer, headlight, tubelight, self.state, groqy, speaker
+            buzzer, headlight, tubelight, self.state, groqy, speaker, streamplayer
         )
 
     def listen(self):
@@ -42,7 +44,8 @@ class WakeListener:
                 keyword_index = self.porcupine.process(pcm)
                 if keyword_index >= 0:
                     print("Woke up!")
-                    self.speaker.speak("Hmm Hmm")
+                    self.streamplayer.stop()
+                    self.speaker.speak("Hmm mm")
                     cmd = self.vc.stt(timeout=2)
                     if cmd:
                         print(cmd)

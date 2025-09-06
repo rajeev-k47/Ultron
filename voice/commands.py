@@ -5,7 +5,9 @@ from audio import Speaker
 
 
 class VoiceCommands:
-    def __init__(self, buzzer, headlight, tubelight, state, groqy, speaker):
+    def __init__(
+        self, buzzer, headlight, tubelight, state, groqy, speaker, streamplayer
+    ):
         self.recognizer = sr.Recognizer()
         self.buzzer = buzzer
         self.buzzer.mode = 1
@@ -14,6 +16,7 @@ class VoiceCommands:
         self.tubelight = tubelight
         self.state = state
         self.groqy = groqy
+        self.streamplayer = streamplayer
 
     def stt(self, timeout=2):
         try:
@@ -79,5 +82,8 @@ class VoiceCommands:
         elif "tubelight" in cmd:
             self.tubelight.toggle()
             self.speaker.speak("Tubelight toggled")
+        elif "play" in cmd:
+            self.speaker.speak("Sure")
+            self.streamplayer.play(cmd.split("play ")[1])
         else:
             self.groqy.speak(cmd)

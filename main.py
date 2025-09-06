@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from audio import Buzzer, Speaker
+from audio import Buzzer, Speaker, StreamPlayer
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from lights import HeadLight, LDR, Decor, TubeLight
@@ -24,15 +24,20 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 
 speaker = Speaker(GROQ_API_KEY)
+
 groq = Groqy(api_key=GROQ_API_KEY, speaker=speaker)
+
 state = State()
 state.init_file()
+
 buzzer = Buzzer(pin=16)
 headlight = HeadLight(pin=6, state=state)
 ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12, state=state)
 tubelight = TubeLight(pin=17, state=state)
+streamplayer = StreamPlayer()
 # people_detector = People(cap=camera)
+
 listener = WakeListener(
     access_key=ACCESS_KEY,
     buzzer=buzzer,
