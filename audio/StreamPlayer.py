@@ -9,7 +9,7 @@ class StreamPlayer:
 
     def play(self, query):
         self.stop()
-        cmd = f'yt-dlp -f bestaudio ytsearch:"{query}" -o - 2>/dev/null | ffplay -nodisp -autoexit -i - &>/dev/null'
+        cmd = f'./dep/yt-dlp -f bestaudio ytsearch:"{query}" -o - 2>/dev/null | ffplay -nodisp -autoexit -i - &>/dev/null'
         self.proc = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
 
     def stop(self):

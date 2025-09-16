@@ -17,7 +17,9 @@ class WakeListener:
         streamplayer,
         keywords=None,
     ):
-        self.porcupine = pvporcupine.create(access_key=access_key, keywords=keywords)
+        self.porcupine = pvporcupine.create(
+            access_key=access_key, keyword_paths=["./dep/Optimus.ppn"]
+        )
         self.sample_rate = self.porcupine.sample_rate
         self.frame_length = self.porcupine.frame_length
         self.state = state
@@ -45,7 +47,7 @@ class WakeListener:
                 if keyword_index >= 0:
                     print("Woke up!")
                     self.streamplayer.stop()
-                    self.speaker.speak("Hmm mm")
+                    self.speaker.speak("How can I help you?")
                     cmd = self.vc.stt(timeout=2)
                     if cmd:
                         print(cmd)
