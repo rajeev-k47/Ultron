@@ -83,7 +83,11 @@ class VoiceCommands:
             self.tubelight.toggle()
             self.speaker.speak("Tubelight toggled")
         elif "play" in cmd:
-            self.speaker.speak("Sure")
-            self.streamplayer.play(cmd.split("play ")[1])
+            self.speaker.speak("Sure let me search it for a while")
+            name = cmd.split("play ")[1]
+            if name != "":
+                self.streamplayer.play(cmd.split("play ")[1])
+            else:
+                self.speaker.speak("What do you want to play?")
         else:
             self.groqy.speak(cmd)

@@ -14,12 +14,16 @@ class Speaker:
     def speak(self, text: str):
         # self.engine.say(text)
         # self.engine.runAndWait()
-        response = self.client.audio.speech.create(
-            model="playai-tts",
-            voice="Cheyenne-PlayAI",
-            input=text,
-            response_format="wav",
-        )
+        try:
+            response = self.client.audio.speech.create(
+                model="playai-tts",
+                voice="Cheyenne-PlayAI",
+                input=text,
+                response_format="wav",
+            )
+        except Exception as e:
+            print(e)
+            return
 
         response.write_to_file(self.speech_file_path)
         subprocess.call(["aplay", self.speech_file_path])
