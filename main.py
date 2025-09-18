@@ -1,3 +1,4 @@
+from door.read import DoorReader
 from fastapi import FastAPI
 from audio import Buzzer, Speaker, StreamPlayer
 from fastapi.responses import StreamingResponse
@@ -36,6 +37,7 @@ ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12, state=state)
 tubelight = TubeLight(pin=17, state=state)
 streamplayer = StreamPlayer()
+door = DoorReader()
 # people_detector = People(cap=camera)
 
 listener = WakeListener(
@@ -56,7 +58,9 @@ def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
     # thread1 = threading.Thread(target=people_detector.run, daemon=True)
     thread2 = threading.Thread(target=listener.listen, daemon=True)
+    thread3 = threading.Thread(target=door.read, daemon=True)
     thread2.start()
+    thread3.start()
     # thread1.start()
     thread.start()
 

@@ -14,6 +14,7 @@ email_validator==2.2.0
 fastapi==0.116.1
 fastapi-cli==0.0.8
 fastapi-cloud-cli==0.1.4
+future==1.0.0
 google-auth==2.40.3
 gpio==1.0.1
 groq==0.31.0
@@ -23,6 +24,7 @@ httpcore==1.0.9
 httptools==0.6.4
 httpx==0.28.1
 idna==3.10
+iso8601==2.1.0
 Jinja2==3.1.6
 jiter==0.10.0
 markdown-it-py==3.0.0
@@ -36,6 +38,7 @@ pycparser==2.22
 pydantic==2.11.7
 pydantic_core==2.33.2
 Pygments==2.19.2
+pyserial==3.5
 python-dotenv==1.1.1
 python-multipart==0.0.20
 pyttsx3==2.99
