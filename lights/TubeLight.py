@@ -7,30 +7,31 @@ class TubeLight:
         self.pin = pin
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(pin, GPIO.OUT)
-        GPIO.output(pin, GPIO.LOW)
         self.state = state
-        if not self.state.load_state().get("tubelight", 0):
-            GPIO.output(pin, GPIO.HIGH)
+        saved = self.state.load_state().get("tubelight", False)
+        self.is_on = bool(saved)
+        GPIO.output(pin, GPIO.HIGH if self.is_on else GPIO.LOW)
 
     def cleanup(self):
         GPIO.cleanup(self.pin)
 
     def on(self):
+        self.is_on = True
         GPIO.output(self.pin, GPIO.HIGH)
+        self.state.update_state("tubelight", True)
 
     def off(self):
+        self.is_on = False
         GPIO.output(self.pin, GPIO.LOW)
+        self.state.update_state("tubelight", False)
 
     def toggle(self):
-        state = GPIO.input(self.pin)
-        self.state.update_state("tubelight", state)
-        if state:
-            GPIO.output(self.pin, GPIO.LOW)
-        else:
-            GPIO.output(self.pin, GPIO.HIGH)
+        self.is_on = not self.is_on
+        GPIO.output(self.pin, GPIO.HIGH if self.is_on else GPIO.LOW)
+        self.state.update_state("tubelight", self.is_on)
 
     def fun(self):
-        for i in range(0, 3):
+        for i in range(3):
             GPIO.output(self.pin, GPIO.HIGH)
             time.sleep(0.3)
             GPIO.output(self.pin, GPIO.LOW)

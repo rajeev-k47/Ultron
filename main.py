@@ -4,6 +4,7 @@ from audio import Buzzer, Speaker, StreamPlayer
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from lights import HeadLight, LDR, Decor, TubeLight
+from matrix.write import Matrix
 from state.state import State
 from video import VideoStream, People
 import threading
@@ -37,8 +38,9 @@ ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12, state=state)
 tubelight = TubeLight(pin=17, state=state)
 streamplayer = StreamPlayer()
-door = DoorReader()
+door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
+matrix = Matrix()
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
@@ -84,6 +86,12 @@ def schedule_alarm(hour: int, minute: int, password: str):
         return {"st": "Unauthorized"}
     scheduler.add_job(buzzer.repeat, "cron", hour=hour, minute=minute, args=[20, 0.7])
     return {"st": f"Alarm set at {hour}:{minute}"}
+
+
+@app.post("/matrix")
+def matrix_switch(value: int):
+    matrix.write(value)
+    return {"st": f"Matrix set to {value}"}
 
 
 @app.get("/video")

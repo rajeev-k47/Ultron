@@ -9,9 +9,9 @@ BAUDRATE = 9600
 HC05_MAC = "00:25:02:00:37:83"
 
 
-class DoorReader:
-    def __init__(self, tubelight):
-        self.tubelight = tubelight
+class Matrix:
+    def __init__(self):
+        pass
 
     def bluetooth_connect(self):
         try:
@@ -45,19 +45,11 @@ class DoorReader:
 
             time.sleep(3)
 
-    def read(self):
+    def write(self, value):
         ser = self.connect_serial()
-        while True:
-            try:
-                value = ser.readline().decode("utf-8").strip()
-                print(value)
-                if value == "0":
-                    print("IN1")
-                    self.tubelight.off()
-                else:
-                    print("IN2")
-                    self.tubelight.on()
+        try:
+            ser.write(f"{value}\n".encode())
 
-            except serial.SerialException as e:
-                ser.close()
-                ser = self.connect_serial()
+        except serial.SerialException as e:
+            ser.close()
+            ser = self.connect_serial()
