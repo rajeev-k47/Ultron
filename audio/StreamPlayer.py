@@ -12,7 +12,7 @@ class StreamPlayer:
     def play(self, query):
         self.stop()
         matrix = Matrix()
-        prev = matrix.read()
+        prev = matrix.get_mode()
         matrix.write(101)
         ytdlp = os.path.join(os.getcwd(), "dep", "yt-dlp")
         cmd = f'{ytdlp} -f bestaudio ytsearch:"{query}" -o - 2>/dev/null | ffplay -nodisp -autoexit -i - &>/dev/null'
