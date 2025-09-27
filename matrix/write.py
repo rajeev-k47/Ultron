@@ -11,7 +11,7 @@ HC05_MAC = "00:25:02:00:37:83"
 
 class Matrix:
     def __init__(self):
-        pass
+        self.mode = 0
 
     def bluetooth_connect(self):
         try:
@@ -45,7 +45,11 @@ class Matrix:
 
             time.sleep(3)
 
+    def get_mode(self):
+        return self.mode
+
     def write(self, value):
+        self.mode = value
         ser = self.connect_serial()
         try:
             ser.write(f"{value}\n".encode())

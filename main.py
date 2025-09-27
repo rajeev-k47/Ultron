@@ -88,7 +88,7 @@ def schedule_alarm(hour: int, minute: int, password: str):
     return {"st": f"Alarm set at {hour}:{minute}"}
 
 
-@app.post("/matrix")
+@app.get("/matrix")
 def matrix_switch(value: int):
     matrix.write(value)
     return {"st": f"Matrix set to {value}"}
