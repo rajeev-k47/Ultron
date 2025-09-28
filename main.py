@@ -60,9 +60,9 @@ def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
     # thread1 = threading.Thread(target=people_detector.run, daemon=True)
     thread2 = threading.Thread(target=listener.listen, daemon=True)
-    thread3 = threading.Thread(target=door.read, daemon=True)
+    # thread3 = threading.Thread(target=door.read, daemon=True)
     thread2.start()
-    thread3.start()
+    # thread3.start()
     # thread1.start()
     thread.start()
 
