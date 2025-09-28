@@ -37,10 +37,10 @@ headlight = HeadLight(pin=6, state=state)
 ldr = LDR(pin=4, headlight=headlight)
 decor = Decor(pin=12, state=state)
 tubelight = TubeLight(pin=17, state=state)
-streamplayer = StreamPlayer()
+matrix = Matrix()
+streamplayer = StreamPlayer(matrix)
 door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
-matrix = Matrix()
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
