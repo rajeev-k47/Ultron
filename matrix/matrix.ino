@@ -16,6 +16,89 @@ struct Animation {
   unsigned long delays[50];
   int frameCount;
 };
+const byte DIGITS[10][5][3] = {
+  { 
+    {1,1,1},
+    {1,0,1},
+    {1,0,1},
+    {1,0,1},
+    {1,1,1}},
+  { 
+    {0,1,0},
+    {1,1,0},
+    {0,1,0},
+    {0,1,0},
+    {1,1,1}},
+  { 
+    {1,1,1},
+    {0,0,1},
+    {1,1,1},
+    {1,0,0},
+    {1,1,1}},
+  { 
+    {1,1,1},
+    {0,0,1},
+    {0,1,1},
+    {0,0,1},
+    {1,1,1}},
+  { 
+    {1,0,1},
+    {1,0,1},
+    {1,1,1},
+    {0,0,1},
+    {0,0,1}},
+  { 
+    {1,1,1},
+    {1,0,0},
+    {1,1,1},
+    {0,0,1},
+    {1,1,1}},
+  { 
+    {1,1,1},
+    {1,0,0},
+    {1,1,1},
+    {1,0,1},
+    {1,1,1}},
+  { 
+    {1,1,1},
+    {0,0,1},
+    {0,1,0},
+    {1,0,0},
+    {1,0,0}},
+  { 
+    {1,1,1},
+    {1,0,1},
+    {1,1,1},
+    {1,0,1},
+    {1,1,1}},
+  { 
+    {1,1,1},
+    {1,0,1},
+    {1,1,1},
+    {0,0,1},
+    {1,1,1}}
+};
+byte twoDigit[7][7];
+
+void makeNumber(int number) {
+    for(int r=0;r<7;r++){
+      for(int c=0;c<7;c++){
+        twoDigit[r][c] = 0;
+      }       
+    }
+    int tens = number / 10;
+    int ones = number % 10;
+
+    for(int r=0;r<5;r++)
+      for(int c=0;c<3;c++)
+        twoDigit[r+1][c] = DIGITS[tens][r][c];
+
+    for(int r=0;r<5;r++)
+      for(int c=0;c<3;c++)
+        twoDigit[r+1][c+4] = DIGITS[ones][r][c];
+}
+
+
 byte patterns[][7][7] = {
   { {0,1,1,1,1,1,0},
     {1,0,0,0,0,0,1},
@@ -177,6 +260,15 @@ byte patterns[][7][7] = {
     {0,0,0,1,0,0,0},
     {0,1,0,0,0,1,0},
     {0,0,1,1,1,0,0}
+  },
+  { 
+    {0,0,0,0,0,0,0},
+    {1,1,1,0,1,1,1},
+    {0,0,1,0,0,0,1},
+    {1,1,1,0,0,0,1},
+    {1,0,0,0,0,0,1},
+    {1,1,1,0,0,0,1},
+    {0,0,0,0,0,0,0}
   }
 };
 
@@ -341,12 +433,13 @@ void setup() {
   for (int i=0;i<8;i++){ pinMode(greenRows[i],OUTPUT); digitalWrite(greenRows[i],HIGH); }
 
 }
-int cmd = 0;
+int cmd =0 ;
 void loop() {
-  if (millis() - lastDhtRead >= 60000) {
+  if (millis() - lastDhtRead >= 6000 && selectedPattern == twoDigit) {
     int chk = DHT.read11(DHT11_PIN);
     temperature = DHT.temperature;
     humidity = DHT.humidity;
+    makeNumber(temperature);
     lastDhtRead = millis();
   }
     if (Serial.available()) {
@@ -361,6 +454,10 @@ void loop() {
         currentFrame = 0;
         lastSwitch = millis();
         currentMode = ANIMATION;
+        break;
+      case 111:
+        selectedPattern = twoDigit;
+        currentMode = STATIC;
         break;
     }
   }
