@@ -1,3 +1,4 @@
+from rpi_ws281x import Color
 from door.read import DoorReader
 from fastapi import FastAPI
 from audio import Buzzer, Speaker, StreamPlayer
@@ -6,13 +7,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from lights import HeadLight, LDR, Decor, TubeLight
 from matrix.write import Matrix
 from state.state import State
-from video import VideoStream, People
+from video import VideoStream
 import threading
 from dotenv import load_dotenv
 import os
 import cv2
 from voice import WakeListener
 from gen_ai import Groqy
+from lights import Strip
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
@@ -41,6 +43,7 @@ matrix = Matrix()
 streamplayer = StreamPlayer(matrix)
 door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
+strips = Strip()
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
@@ -58,12 +61,10 @@ listener = WakeListener(
 @app.on_event("startup")
 def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
-    # thread1 = threading.Thread(target=people_detector.run, daemon=True)
     thread2 = threading.Thread(target=listener.listen, daemon=True)
     # thread3 = threading.Thread(target=door.read, daemon=True)
     thread2.start()
     # thread3.start()
-    # thread1.start()
     thread.start()
 
 
@@ -78,6 +79,11 @@ def home():
             "headlight": "/headlight",
         }
     }
+
+@app.get("/strip")
+def strip(m: int):
+    strips.rpm(m)
+    return {"st": "Ok"}
 
 
 @app.post("/alarm")
