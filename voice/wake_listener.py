@@ -17,8 +17,11 @@ class WakeListener:
         streamplayer,
         keywords=None,
     ):
+        # self.porcupine = pvporcupine.create(
+        #     access_key=access_key, keyword_paths=["./dep/Optimus.ppn"]
+        # )
         self.porcupine = pvporcupine.create(
-            access_key=access_key, keyword_paths=["./dep/Optimus.ppn"]
+            access_key=access_key, keywords=keywords
         )
         self.sample_rate = self.porcupine.sample_rate
         self.frame_length = self.porcupine.frame_length

@@ -2,7 +2,7 @@ from gen_ai.groq_handler import Groqy
 import speech_recognition as sr
 import time
 from audio import Speaker
-
+from system.get_ip import get_local_ip
 
 class VoiceCommands:
     def __init__(
@@ -90,5 +90,9 @@ class VoiceCommands:
                 self.streamplayer.play(name)
             else:
                 self.speaker.speak("What do you want me to play?")
+        elif "what is my ip" in cmd:
+            ip = get_local_ip()
+            ip = ip.replace('.', ' dot ')
+            self.speaker.speak(f"Your IP address is {ip}")
         else:
             self.groqy.speak(cmd)
