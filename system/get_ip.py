@@ -11,6 +11,6 @@ def get_local_ip():
             struct.pack('256s', "wlan0".encode('utf-8'))
         )[20:24]
         return socket.inet_ntoa(packed)
-    except OSError
+    except OSError:
         return None
 

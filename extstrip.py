@@ -6,6 +6,8 @@ from rpi_ws281x import PixelStrip, Color
 import math
 import sys
 import threading
+import color_pop_fixed
+import xbox_integration
 
 LED_COUNT = 100
 LED_PIN = 18
@@ -28,8 +30,16 @@ SENSITIVITY = 10
 MODE = 4
 current_led_count = 0
 solid_color = Color(255, 0, 0)
+_mode_lock = threading.Lock()
 
+def set_mode_safe(new_mode):
+    global MODE
+    with _mode_lock:
+        MODE = new_mode
 
+def get_mode_safe():
+    with _mode_lock:
+        return MODE
 def plasma_wave(wait_ms=20):
     start_time = time.time()
     while MODE == 4:
@@ -145,39 +155,111 @@ def switch_mode(new_mode):
     global MODE
     MODE = new_mode
     print(f"Switched to mode: {MODE}")
-
-
 def main():
-    global MODE
-    print("Available Modes: AUDIO, COLOR_WIPE, RAINBOW, FADE, PLASMA, VORTEX")
+    prev_mode = None
+    game_controller = None
+    game_strip = strip  # reuse existing strip
 
+    # start stdin listener (daemon)
     threading.Thread(target=stdin_listener, daemon=True).start()
-    while True:
-            if MODE == 1:
+
+    try:
+        while True:
+            mode = get_mode_safe()
+
+            # handle mode transitions
+            if mode != prev_mode:
+                # leaving game: stop game and controller
+                if prev_mode == 6:
+                    try:
+                        color_pop_fixed.stop_game()
+                    except Exception as e:
+                        print("[Ultron] stop_game error:", e)
+                    if game_controller:
+                        try:
+                            game_controller.stop()
+                        except Exception:
+                            pass
+                        game_controller = None
+
+                # entering game: start once
+                if mode == 6:
+                    try:
+                        color_pop_fixed.start_game(game_strip)
+                    except Exception as e:
+                        print("[Ultron] start_game error:", e)
+                    # create controller once
+                    try:
+                        game_controller = xbox_integration.XboxController()
+                        if game_controller.init():
+                            game_controller.start()
+                        else:
+                            game_controller = None
+                    except Exception as e:
+                        print("[Ultron] controller init error:", e)
+
+                prev_mode = mode
+
+            # per-mode non-blocking or light blocking behaviour
+            if mode == 1:
                 color_wipe(Color(0, 0, 255))
-            elif MODE == 2:
+            elif mode == 2:
                 rainbow_cycle(wait_ms=5)
-            elif MODE == 3:
+            elif mode == 3:
                 smooth_fade(wait_ms=15)
-            elif MODE == 4:
+            elif mode == 4:
                 plasma_wave()
-            elif MODE == 5:
+            elif mode == 5:
                 vortex_spiral()
+            elif mode == 6:
+                # game runs in its own thread; keep main loop idle-ish
+                time.sleep(0.1)
+            elif mode == 0:
+                # audio mode handled by callback; keep main loop light
+                time.sleep(0.05)
             else:
-                for i in range(strip.numPixels()):
+                # default: ensure strip is dark, but avoid repeated show spam
+                n = strip.numPixels()
+                for i in range(n):
                     strip.setPixelColor(i, Color(0, 0, 0))
-                    strip.show()
+                strip.show()
+                time.sleep(0.1)
+
+            # small sleep to prevent busy spin
+            time.sleep(0.02)
+
+    except KeyboardInterrupt:
+        # cleanup
+        try:
+            color_pop_fixed.stop_game()
+        except Exception:
+            pass
+        if game_controller:
+            try:
+                game_controller.stop()
+            except Exception:
+                pass
+        # clear strip
+        for i in range(strip.numPixels()):
+            strip.setPixelColor(i, Color(0, 0, 0))
+        strip.show()
+        raise
 
 
 def stdin_listener():
-    global MODE
     for line in sys.stdin:
-        new_mode = line.strip()
-        if new_mode.isdigit():
-            MODE = int(new_mode)  # convert to int
+        raw = line.strip()
+        if raw == "":
+            continue
+        if raw.isdigit():
+            try:
+                nm = int(raw)
+            except Exception:
+                nm = raw
         else:
-            MODE = new_mode.upper()  # for string modes like PLASMA
-        print(f"[Ultron] Mode changed to {MODE}")
+            nm = raw.upper()
+        set_mode_safe(nm)
+        print(f"[Ultron] Mode changed to {nm}")
 
 if __name__ == "__main__":
     try:

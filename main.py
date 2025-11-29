@@ -45,6 +45,7 @@ door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
 strips = Strip()
 
+
 listener = WakeListener(
     access_key=ACCESS_KEY,
     buzzer=buzzer,
