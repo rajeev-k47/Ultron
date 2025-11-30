@@ -1,11 +1,13 @@
-const byte colPins[7] = {23,24,25,26,27,28,29};
-const byte blueRows[8] = {30,31,32,33,34,35,36,37};
-const byte greenRows[8] = {38,39,40,41,42,43,44,45};
+const byte colPins[8] = {23,24,25,26,27,28,29,30};
+const byte blueRows[8] = {31,32,33,34,35,36,37,38};
+const byte greenRows[8] = {39,40,41,42,43,44,45,46};
 #include <dht.h>
 
 dht DHT; 
 
 #define DHT11_PIN 12
+const int mqPin = A0;
+
 unsigned long lastDhtRead = 0;
 int temperature = 0;
 int humidity = 0;
@@ -435,8 +437,11 @@ void setup() {
 }
 int cmd =0 ;
 void loop() {
+
   if (millis() - lastDhtRead >= 6000 && selectedPattern == twoDigit) {
     int chk = DHT.read11(DHT11_PIN);
+    int raw = analogRead(mqPin);
+    Serial.println(raw);
     temperature = DHT.temperature;
     humidity = DHT.humidity;
     makeNumber(temperature);
