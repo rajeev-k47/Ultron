@@ -22,6 +22,8 @@ PASSWORD = os.getenv("PASSWORD")
 ACCESS = int(os.getenv("ACCESS", 0))
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+MQTTS_USER = os.getenv("MQTTS_USER")
+MQTTS_PASS = os.getenv("MQTTS_PASS")
 
 camera = cv2.VideoCapture(0)
 app = FastAPI()
@@ -45,7 +47,7 @@ streamplayer = StreamPlayer(matrix)
 door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
 strips = Strip()
-mqtts = mqtts(tubelight)
+mqtts = mqtts(MQTTS_USER,MQTTS_PASS,tubelight)
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
