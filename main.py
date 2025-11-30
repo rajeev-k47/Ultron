@@ -15,6 +15,7 @@ import cv2
 from voice import WakeListener
 from gen_ai import Groqy
 from lights import Strip
+from mqtts import mqtts
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
@@ -44,7 +45,7 @@ streamplayer = StreamPlayer(matrix)
 door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
 strips = Strip()
-
+mqtts = mqtts(tubelight)
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
@@ -64,9 +65,11 @@ def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
     thread2 = threading.Thread(target=listener.listen, daemon=True)
     # thread3 = threading.Thread(target=door.read, daemon=True)
+    thread4 = threading.Thread(target=mqtts.publish_status, daemon=True)
     thread2.start()
     # thread3.start()
     thread.start()
+    thread4.start()
 
 
 @app.get("/")
@@ -80,6 +83,7 @@ def home():
             "headlight": "/headlight",
         }
     }
+
 
 @app.get("/strip")
 def strip(m: int):
