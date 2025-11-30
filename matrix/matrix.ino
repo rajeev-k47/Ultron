@@ -438,12 +438,17 @@ void setup() {
 int cmd =0 ;
 void loop() {
 
-  if (millis() - lastDhtRead >= 6000 && selectedPattern == twoDigit) {
+  if (millis() - lastDhtRead >= 6000 ) {
     int chk = DHT.read11(DHT11_PIN);
     int raw = analogRead(mqPin);
-    Serial.println(raw);
     temperature = DHT.temperature;
     humidity = DHT.humidity;
+    Serial.print(raw);
+    Serial.print(",");
+    Serial.print(temperature);
+    Serial.print(",");
+    Serial.println(humidity);
+
     makeNumber(temperature);
     lastDhtRead = millis();
   }

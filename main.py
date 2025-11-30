@@ -16,6 +16,7 @@ from voice import WakeListener
 from gen_ai import Groqy
 from lights import Strip
 from mqtts import mqtts
+from matrix import SerialComm
 
 load_dotenv()
 PASSWORD = os.getenv("PASSWORD")
@@ -47,7 +48,8 @@ streamplayer = StreamPlayer(matrix)
 door = DoorReader(tubelight)
 # people_detector = People(cap=camera)
 strips = Strip()
-mqtts = mqtts(MQTTS_USER,MQTTS_PASS,tubelight)
+serialcomm = SerialComm()
+mqtts = mqtts(MQTTS_USER, MQTTS_PASS, tubelight, serialcomm)
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
@@ -68,10 +70,12 @@ def bg_tasks():
     thread2 = threading.Thread(target=listener.listen, daemon=True)
     # thread3 = threading.Thread(target=door.read, daemon=True)
     thread4 = threading.Thread(target=mqtts.publish_status, daemon=True)
+    thread5 = threading.Thread(target=serialcomm.read, daemon=True)
     thread2.start()
     # thread3.start()
     thread.start()
     thread4.start()
+    thread5.start()
 
 
 @app.get("/")
