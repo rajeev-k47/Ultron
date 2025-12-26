@@ -148,18 +148,19 @@ def toggleHeadlight(mode: int = 0):
 
 
 @app.get("/tubelight")
-def toggleTubeLight(fun: int = 0):
+def toggleTubeLight(fun: int = -1):
     if fun == 0:
         tubelight.off()
         return {"st": "TubeLight turned off"}
     elif fun == 1:
         tubelight.on()
         return {"st": "TubeLight turned on"}
-    if fun != 0:
+    elif fun==-1:
+        tubelight.toggle()
+        return {"st": "TubeLight toggled"}
+    else:
         tubelight.fun()
         return {"st": "Let's have some fun"}
-    tubelight.toggle()
-    return {"st": "TubeLight toggled"}
 
 
 @app.get("/decor")
