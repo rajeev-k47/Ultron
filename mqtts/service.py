@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import json
 import time
 from system.get_ip import get_local_ip
+import subprocess
 
 
 class mqtts:
@@ -19,12 +20,20 @@ class mqtts:
 
     def publish_status(self):
         while True:
+            self.rpi_temp = float(
+                subprocess.run(
+                    ["vcgencmd", "measure_temp"],
+                    capture_output=True,
+                    text=True
+                ).stdout.split('=')[1].replace("'C", "")
+            )
             payload = {
                 "tubelight": 1 if self.tubelight.is_on else 0,
                 "ip": self.ip,
                 "temp": self.serialcomm.temp,
                 "hum": self.serialcomm.hum,
                 "raw": self.serialcomm.raw,
+                "rpi4_temp": self.rpi_temp
             }
             self.mqtt_client.publish(self.topic, json.dumps(payload))
             time.sleep(1)
