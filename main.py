@@ -1,16 +1,17 @@
 from rpi_ws281x import Color
 from door.read import DoorReader
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from audio import Buzzer, Speaker, StreamPlayer
 from fastapi.responses import StreamingResponse
 from apscheduler.schedulers.background import BackgroundScheduler
 from lights import HeadLight, LDR, Decor, TubeLight
 from matrix.write import Matrix
 from state.state import State
-from video import VideoStream
+from video import video_stream
 import threading
 from dotenv import load_dotenv
 import os
+import time
 import cv2
 from voice import WakeListener
 from gen_ai import Groqy
@@ -64,6 +65,15 @@ listener = WakeListener(
 )
 
 
+def generate_frames():
+    while True:
+        frame = video_stream.get_frame()
+        if frame is None:
+            continue
+        yield (b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+        time.sleep(0.03)
+
+
 @app.on_event("startup")
 def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
@@ -97,11 +107,21 @@ def strip(m: int):
     return {"st": "Ok"}
 
 
-@app.post("/alarm")
-def schedule_alarm(hour: int, minute: int, password: str):
+@app.get("/alarm")
+def schedule_alarm(
+    hour: int = Query(...),
+    minute: int = Query(...),
+    password: str = Query(...),
+    wakeup: bool = Query(False),
+):
     if password != PASSWORD:
         return {"st": "Unauthorized"}
-    scheduler.add_job(buzzer.repeat, "cron", hour=hour, minute=minute, args=[20, 0.7])
+
+    scheduler.add_job(buzzer.repeat, "cron", hour=hour, minute=minute, args=[40, 0.4])
+
+    if wakeup:
+        scheduler.add_job(tubelight.fun, "cron", hour=hour, minute=minute, args=[])
+
     return {"st": f"Alarm set at {hour}:{minute}"}
 
 
@@ -115,9 +135,8 @@ def matrix_switch(value: int):
 def stream(password: str):
     if password != PASSWORD:
         return {"st": "Unauthorized"}
-    cam1 = VideoStream()
     return StreamingResponse(
-        cam1.generate_frames(camera),
+        generate_frames(),
         media_type="multipart/x-mixed-replace;boundary=frame",
     )
 
@@ -129,9 +148,8 @@ def stream_temp():
         return {"st": "Temp limit reached"}
     ACCESS -= 1
     buzzer.alert()
-    cam2 = VideoStream()
     return StreamingResponse(
-        cam2.generate_frames(camera),
+        generate_frames(),
         media_type="multipart/x-mixed-replace;boundary=frame",
     )
 
@@ -155,7 +173,7 @@ def toggleTubeLight(fun: int = -1):
     elif fun == 1:
         tubelight.on()
         return {"st": "TubeLight turned on"}
-    elif fun==-1:
+    elif fun == -1:
         tubelight.toggle()
         return {"st": "TubeLight toggled"}
     else:

@@ -1,2 +1,2 @@
-from .stream import VideoStream
+from .stream import video_stream
 from .people import People
