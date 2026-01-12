@@ -27,7 +27,6 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MQTTS_USER = os.getenv("MQTTS_USER")
 MQTTS_PASS = os.getenv("MQTTS_PASS")
 
-camera = cv2.VideoCapture(0)
 app = FastAPI()
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -51,6 +50,8 @@ door = DoorReader(tubelight)
 strips = Strip()
 serialcomm = SerialComm()
 mqtts = mqtts(MQTTS_USER, MQTTS_PASS, tubelight, serialcomm)
+
+from audio import audio_recorder
 
 listener = WakeListener(
     access_key=ACCESS_KEY,

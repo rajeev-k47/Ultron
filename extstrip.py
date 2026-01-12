@@ -18,8 +18,7 @@ LED_INVERT = False
 LED_CHANNEL = 0
 
 strip = PixelStrip(
-    LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT,
-    LED_BRIGHTNESS, LED_CHANNEL
+    LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL
 )
 strip.begin()
 
@@ -32,14 +31,18 @@ current_led_count = 0
 solid_color = Color(255, 0, 0)
 _mode_lock = threading.Lock()
 
+
 def set_mode_safe(new_mode):
     global MODE
     with _mode_lock:
         MODE = new_mode
 
+
 def get_mode_safe():
     with _mode_lock:
         return MODE
+
+
 def plasma_wave(wait_ms=20):
     start_time = time.time()
     while MODE == 4:
@@ -155,6 +158,8 @@ def switch_mode(new_mode):
     global MODE
     MODE = new_mode
     print(f"Switched to mode: {MODE}")
+
+
 def main():
     prev_mode = None
     game_controller = None
@@ -260,6 +265,7 @@ def stdin_listener():
             nm = raw.upper()
         set_mode_safe(nm)
         print(f"[Ultron] Mode changed to {nm}")
+
 
 if __name__ == "__main__":
     try:

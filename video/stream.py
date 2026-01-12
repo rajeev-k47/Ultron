@@ -6,7 +6,7 @@ from datetime import datetime
 
 RECORD_DIR = "records"
 SEGMENT_SECONDS = 300  # 5min max
-RETENTION_DAYS = 1  # 1day recordings only
+RETENTION_DAYS = 0.5  # 1/2day recordings only
 FPS = 20
 
 os.makedirs(RECORD_DIR, exist_ok=True)
