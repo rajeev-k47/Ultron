@@ -51,7 +51,7 @@ strips = Strip()
 serialcomm = SerialComm()
 mqtts = mqtts(MQTTS_USER, MQTTS_PASS, tubelight, serialcomm)
 
-from audio import audio_recorder
+from audio.AudioRecorder import audio_recorder
 
 listener = WakeListener(
     access_key=ACCESS_KEY,
