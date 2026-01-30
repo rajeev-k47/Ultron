@@ -13,7 +13,7 @@ class DoorReader:
     def __init__(self, tubelight):
         self.tubelight = tubelight
         self.ser = None
-        self.connect_serial()
+        # self.connect_serial()
 
     def bluetooth_connect(self):
         try:
