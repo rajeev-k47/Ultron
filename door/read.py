@@ -12,6 +12,8 @@ HC05_MAC = "00:25:02:00:37:83"
 class DoorReader:
     def __init__(self, tubelight):
         self.tubelight = tubelight
+        self.ser = None
+        self.connect_serial()
 
     def bluetooth_connect(self):
         try:
@@ -35,9 +37,8 @@ class DoorReader:
 
             if os.path.exists(DEVICE):
                 try:
-                    ser = serial.Serial(DEVICE, BAUDRATE, timeout=1)
+                    self.ser = serial.Serial(DEVICE, BAUDRATE, timeout=1)
                     print(f"Connected to {DEVICE} at {BAUDRATE} baud")
-                    return ser
                 except serial.SerialException as e:
                     print("Serial Exception")
                 except Exception as e:
@@ -45,11 +46,26 @@ class DoorReader:
 
             time.sleep(3)
 
+    def write(self, value):
+        if self.ser is None or not self.ser.is_open:
+            self.connect_serial()
+
+        try:
+            self.ser.write(f"{value}\n".encode())
+            self.ser.flush()
+
+        except serial.SerialException:
+            try:
+                self.ser.close()
+            except Exception:
+                pass
+            self.ser = None
+            self.connect_serial()
+    
     def read(self):
-        ser = self.connect_serial()
         while True:
             try:
-                value = ser.readline().decode("utf-8").strip()
+                value = self.ser.readline().decode("utf-8").strip()
                 print(value)
                 if value == "0":
                     print("IN1")
@@ -59,5 +75,5 @@ class DoorReader:
                     self.tubelight.on()
 
             except serial.SerialException as e:
-                ser.close()
-                ser = self.connect_serial()
+                self.ser.close()
+                self.ser = self.connect_serial()

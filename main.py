@@ -125,6 +125,10 @@ def schedule_alarm(
 
     return {"st": f"Alarm set at {hour}:{minute}"}
 
+@app.get("/door")
+def door_switch(value: str):
+    door.write(value)
+    return {"st": f"Door set to {value}"}
 
 @app.get("/matrix")
 def matrix_switch(value: int):
