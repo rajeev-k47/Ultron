@@ -16,8 +16,8 @@ class Speaker:
         # self.engine.runAndWait()
         try:
             response = self.client.audio.speech.create(
-                model="playai-tts",
-                voice="Cheyenne-PlayAI",
+                model="canopylabs/orpheus-v1-english",
+                voice="autumn",
                 input=text,
                 response_format="wav",
             )

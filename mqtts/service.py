@@ -36,4 +36,4 @@ class mqtts:
                 "rpi4_temp": self.rpi_temp
             }
             self.mqtt_client.publish(self.topic, json.dumps(payload))
-            time.sleep(1)
+            time.sleep(10)
