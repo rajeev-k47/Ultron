@@ -39,6 +39,7 @@ class DoorReader:
                 try:
                     self.ser = serial.Serial(DEVICE, BAUDRATE, timeout=1)
                     print(f"Connected to {DEVICE} at {BAUDRATE} baud")
+                    return self.ser
                 except serial.SerialException as e:
                     print("Serial Exception")
                 except Exception as e:
@@ -63,6 +64,8 @@ class DoorReader:
             self.connect_serial()
     
     def read(self):
+        if self.ser is None or not self.ser.is_open:
+         self.connect_serial()
         while True:
             try:
                 value = self.ser.readline().decode("utf-8").strip()

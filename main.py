@@ -79,7 +79,7 @@ def generate_frames():
 def bg_tasks():
     thread = threading.Thread(target=ldr.read, daemon=True)
     thread2 = threading.Thread(target=listener.listen, daemon=True)
-    thread3 = threading.Thread(target=door.connect_serial, daemon=True)
+    thread3 = threading.Thread(target=door.read, daemon=True)
     thread4 = threading.Thread(target=mqtts.publish_status, daemon=True)
     thread5 = threading.Thread(target=serialcomm.read, daemon=True)
     thread2.start()
