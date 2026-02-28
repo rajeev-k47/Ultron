@@ -1,0 +1,4 @@
+<tile-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:icon="@drawable/door"
+    android:label="Door" />

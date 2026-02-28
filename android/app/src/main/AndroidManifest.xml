@@ -34,6 +34,22 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/app_widget_info" />
         </receiver>
+        <service
+            android:name=".QTService"
+            android:label="Door"
+            android:icon="@drawable/door"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.quicksettings.TILE_SERVICE"
+                android:resource="@xml/tile_service" />
+        </service>
+
     </application>
 
 </manifest>
