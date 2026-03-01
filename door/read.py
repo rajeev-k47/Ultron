@@ -62,18 +62,18 @@ class DoorReader:
                 pass
             self.ser = None
             self.connect_serial()
-    
+
     def read(self):
         if self.ser is None or not self.ser.is_open:
-         self.connect_serial()
+            self.connect_serial()
         while True:
             try:
                 value = self.ser.readline().decode("utf-8").strip()
                 print(value)
-                if value == "0":
+                if value == "1":
                     print("IN1")
                     self.tubelight.off()
-                else:
+                elif value == "0":
                     print("IN2")
                     self.tubelight.on()
 

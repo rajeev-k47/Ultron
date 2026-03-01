@@ -6,7 +6,9 @@ class Strip:
             [ "sudo" ,"python3", "extstrip.py"], stdin=subprocess.PIPE, text=True
         )
         #game.start_shooter(self)
-
+    def set_color(self, r, g, b):
+        self.proc.stdin.write(f"RGB:{r},{g},{b}\n")
+        self.proc.stdin.flush()
 
     def rpm(self, rpm):
         self.proc.stdin.write(f"{rpm}\n")

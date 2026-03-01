@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.ultron.R
 import com.example.ultron.ui.theme.BackgroundColor
 import com.example.ultron.ui.theme.OverBackground
@@ -54,6 +56,7 @@ fun MainFragment(preferencesManager: PreferencesManager, url: Map<String,*>){
     var bottomSettings by rememberSaveable { mutableStateOf(false) }
     var bottomAdd by rememberSaveable { mutableStateOf(false) }
     var urls by rememberSaveable { mutableStateOf(url) }
+    var showPicker by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize().background(BackgroundColor).windowInsetsPadding(WindowInsets.statusBars)
@@ -73,6 +76,15 @@ fun MainFragment(preferencesManager: PreferencesManager, url: Map<String,*>){
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.color_picker),
+                    tint = Color.Red,
+                    contentDescription = "Add",
+                    modifier = Modifier.padding(end = 20.dp).size(28.dp).clickable {
+                        showPicker = true
+                    }
+                )
+
                 Icon(
                     painter = painterResource(id = R.drawable.more),
                     tint = Color.Red,
@@ -113,6 +125,14 @@ fun MainFragment(preferencesManager: PreferencesManager, url: Map<String,*>){
         )
         Spacer(modifier = Modifier.height(5.dp))
 
+
+        if (showPicker) {
+            Dialog(onDismissRequest = { showPicker = false }) {
+                Surface(shape = RoundedCornerShape(16.dp)) {
+                    StripColorPicker(serverUrl)
+                }
+            }
+        }
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

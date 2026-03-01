@@ -107,6 +107,10 @@ def strip(m: int):
     strips.rpm(m)
     return {"st": "Ok"}
 
+@app.get("/strip/color")
+def set_strip_color(r: int, g: int, b: int):
+    strips.set_color(r, g, b)
+    return {"st": f"Color set to {r},{g},{b}"}
 
 @app.get("/alarm")
 def schedule_alarm(

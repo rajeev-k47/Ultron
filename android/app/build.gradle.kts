@@ -61,4 +61,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation ("androidx.glance:glance-appwidget:1.1.1")
+    implementation("com.godaddy.android.colorpicker:compose-color-picker:0.7.0")
 }

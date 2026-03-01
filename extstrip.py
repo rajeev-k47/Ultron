@@ -216,6 +216,11 @@ def main():
                 plasma_wave()
             elif mode == 5:
                 vortex_spiral()
+            elif mode == "SOLID":
+                for i in range(strip.numPixels()):
+                   strip.setPixelColor(i, solid_color)
+                   strip.show()
+                   time.sleep(0.1)
             elif mode == 6:
                 # game runs in its own thread; keep main loop idle-ish
                 time.sleep(0.1)
@@ -252,19 +257,28 @@ def main():
 
 
 def stdin_listener():
+    global solid_color
+
     for line in sys.stdin:
         raw = line.strip()
-        if raw == "":
+        if not raw:
             continue
-        if raw.isdigit():
+
+        if raw.startswith("RGB:"):
             try:
-                nm = int(raw)
-            except Exception:
-                nm = raw
+                rgb_part = raw.split("RGB:")[1]
+                r, g, b = map(int, rgb_part.split(","))
+                solid_color = Color(r, g, b)
+                set_mode_safe("SOLID")
+                print(f"[Ultron] Solid color set to {r},{g},{b}")
+            except Exception as e:
+                print("Invalid RGB format:", e)
+            continue
+
+        if raw.isdigit():
+            set_mode_safe(int(raw))
         else:
-            nm = raw.upper()
-        set_mode_safe(nm)
-        print(f"[Ultron] Mode changed to {nm}")
+            set_mode_safe(raw.upper())
 
 
 if __name__ == "__main__":
